@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <title>提案分享</title>
+  <link rel="stylesheet" href="http://cdn.tvote.red/ui/pc/css/style.css">
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_498310_qxgpzbqe4mfgvi.css">
+  <style>
+    .container{
+      max-width:600px;
+      margin:0 auto;
+    }
+    .ban{
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+<div class="container">
+
+<div class="share-content">
+  <div class="title" style="padding-bottom: 20px;">
+    <span>{{info.title}}</span>
+  </div>
+  <!--<div style="color: #969999;padding: 5px 0">
+    {{info.createTime | forDate}}
+  </div>-->
+  <div class="banner ban" :style="{backgroundImage: 'url(' + info.image + ')'}" style="position: relative">
+    <div v-if="info.status==8" style="text-align: right;color: #fff;position: absolute;bottom: 0;left: 0;right: 0" >
+      <p style="padding: 0 10px 5px 0">公示时间: {{info.publicityTime | formatDate}}</p>
+    </div>
+  </div>
+  <div class="text" style="margin-top: 20px">
+    <p>
+      {{info.summary}}
+    </p>
+  </div>
+  <div class="proposal" style="padding: 20px 0;border: none" >
+    <h3>提案选项</h3>
+    <div v-for="(each,i) in info.optionList">
+      <p class="yes">
+        {{each.num}}、{{each.content}}
+      </p>
+      <div class="line" style="display:inline-block;vertical-align: middle;"></div><span> {{each.totalTicket}}票</span>
+    </div>
+  </div>
+  <div>
+    <h3>提案规则</h3>
+    <div class="time">
+      <p>提案有效期: {{info.startTime | formatDate}} — {{info.endTime | formatDate}}</p>
+    </div>
+    <div class="number">
+      <p>
+        {{info.ticketTkc}}TKC/票 <span class="num">最低生效:  {{info.effectiveTicket}}票</span>
+      </p>
+      <div class="plan" style="border: none;">
+        <!-- <div></div> -->
+        <p class="data" style="padding-left:0">
+          {{info.ticketPercentage}}%
+          <img width="15" src="http://cdn.tvote.red/ui/pc/img/icon_ticket@2x.png" alt=""/>
+          <span>
+          {{info.totalTicket}}票
+        </span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div v-if="info.status==8">
+    <div class="proposal" style="border: none">
+      <p class="title">公示结果</p>
+      <p class="control"></p>
+      <p class="yes">
+        公示结果：<span class="status">{{info.result}}</span>
+      </p>
+    </div>
+  </div>
+  <h3 style="padding-bottom: 20px">提案介绍</h3>
+  <div style="padding-bottom: 50px" v-if="info.contentList.length === 0">
+    <p v-html="info.content"></p>
+  </div>
+  <div v-else class="introduce" style="height: auto;padding: 0 0 30px 0">
+    <div class="proposal" style="border: none">
+      <div class="contentBox">
+        <div v-for="item in info.contentList">
+          <img style="width: 100%;height: 260px;object-fit: cover;" v-if="item.type == 1" :src="item.file" alt="">
+          <video style="width: 100%;height: 260px" v-else-if="item.type == 2" :src="item.file" controls></video>
+          <p style="color: #7D7F80" v-if="item.origin"><i class="iconfont icon-arrowupb" style="padding: 0 3px;font-size: 20px"></i>{{item.origin}}</p>
+          <p style="margin-top: 15px;white-space: pre;">{{item.content}}</p>
+        </div>
+        <div style="margin-top: 15px" v-if="info.linkList.length > 0"><b v-if="info.linkList[0].name || info.linkList[0].linkUrl">相关链接：</b></div>
+        <div v-for="link in info.linkList">
+          <a style="display:inline-block;padding: 5px 0" :href="link.linkUrl">{{link.name}}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer container">
+  <div>
+    <img style="vertical-align: middle" width="39.5" src="http://cdn.tvote.red/ui/pc/img/h5_icon_logo.png" alt="">
+    <span class="footer-text">剃投</span>
+    <span class="footer-text1">TVOTE</span>
+  </div>
+  <div>
+    <button><a href="/h5/download" style="font-size: 16px;color: #FFFFFF;letter-spacing: 0;">下载APP</a></button>
+  </div>
+</div>
+</div>
+</div>
+</body>
+<script src="//apps.bdimg.com/libs/zepto/1.1.4/zepto.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment.min.js"></script>
+<script src="//cdn.bootcss.com/vue/2.5.9/vue.min.js"></script>
+<!--<script src="https://cdn.bootcss.com/vue/2.5.9/vue.min.js"></script>-->
+<script>
+  var urlParams = function (key) {
+    var ret = location.search.match(new RegExp('(\\?|&)' + key + '=(.*?)(&|$)'))
+    return ret && decodeURIComponent(ret[2])
+  };
+  var pid = urlParams('id');
+  $(function () {
+//    var rootUrl = 'http://192.168.11.233:20082';
+    var rootUrl = 'http://api.dev.tvote.red';
+      var app = new Vue({
+        el: '#app',
+        data: {
+          info: {
+            linkList: [],
+            contentList: []
+          }
+        },
+        created() {
+          var _this = this;
+          $.ajax({
+            type: 'post',
+            url: rootUrl+'/share/detail',
+            data: {id: pid},
+            success: function (res) {
+              _this.info = res.data;
+              document.title = res.data.title;
+            }
+          });
+        },
+        filters: {
+          formatDate(v) {
+            return moment(v).format('YYYY-MM-DD HH:mm');
+          },
+          forDate(v) {
+            return moment(v).format('YYYY-MM-DD')
+          }
+        }
+      });
+  });
+</script>
+</html>

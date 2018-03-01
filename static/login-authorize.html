@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>登录授权</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    .spinner {
+      width: 60px;
+      height: 60px;
+
+      position: relative;
+      margin: 100px auto;
+    }
+
+    .double-bounce1, .double-bounce2 {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: #67CF22;
+      opacity: 0.6;
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      -webkit-animation: bounce 2.0s infinite ease-in-out;
+      animation: bounce 2.0s infinite ease-in-out;
+    }
+
+    .double-bounce2 {
+      -webkit-animation-delay: -1.0s;
+      animation-delay: -1.0s;
+    }
+
+    @-webkit-keyframes bounce {
+      0%, 100% {
+        -webkit-transform: scale(0.0)
+      }
+      50% {
+        -webkit-transform: scale(1.0)
+      }
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: scale(0.0);
+        -webkit-transform: scale(0.0);
+      }
+      50% {
+        transform: scale(1.0);
+        -webkit-transform: scale(1.0);
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="spinner">
+  <div class="double-bounce1"></div>
+  <div class="double-bounce2"></div>
+</div>
+<div style="width: 100%;text-align: center">正在登录</div>
+<script src="zepto.min.js"></script>
+<script>
+  function getUrlParam (name) {
+    var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (!results) { return 0; }
+    return results[1] || 0;
+  }
+  (function(){
+    var st = getUrlParam('ST');
+    if(!st){
+      parent.showWarning('该账户无管理端权限');
+      return
+    }
+    localStorage.setItem('tx-st', st);
+    $.ajax({
+      type: 'get',
+      url: 'http://192.168.11.233:20084/getUserInfo',
+//      url: 'http://mng.tvote.cn/api/getUserInfo',
+//      url: 'http://mng.dev.tvote.cn/api/getUserInfo',
+      headers: {
+        'cas-client-st': st
+      },
+      success: function (res) {
+        if(res.code === 200){
+          localStorage.setItem('tx-user', JSON.stringify(res.data));
+          parent.location.href = '/'
+        }else {
+          alert(res.message);
+          parent.location.reload();
+        }
+      },
+      error: function (resObj) {
+        //特殊处理
+        parent.showWarning(resObj.status === 200 ? JSON.parse(resObj.response).message : '请求失败！请稍后再试');
+      }
+    });
+  })()
+</script>
+</body>
+</html>
