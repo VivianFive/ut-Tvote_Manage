@@ -2,7 +2,7 @@
   "name": "iview-demo",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "xuffy <d.xuffy@qq.com>",
+  "author": "Fan Yafei <921255299@qq.com>",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",

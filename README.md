@@ -1,11 +1,16 @@
 剃投管理系统
+
 项目采用vue，iView组件库，用vue-cli搭建。
+
 生产地址 http://mng.tvote.red/
+
 开发地址 http://mng.dev.tvote.red/
+
 测试地址 http://mng.dev.tvote.red/
+
 项目成员
- 前端开发 范雅飞 袁亮
-s
+ 前端开发 袁亮 范雅飞
+
 目錄结构
 APP
     |__ build/   (编译相关配置，本地服务配置)
